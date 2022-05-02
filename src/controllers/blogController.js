@@ -150,7 +150,7 @@ const blogDelete = async function (req, res) {
         // Cheking the blogId fromm blogModel exist or not 
         let checkBlogId = await blogModel.findById({ _id: blogId })
 
-        if (!checkBlogId) return res.status(404).send({ msg: "Blog Id is not exist in our Data Base" })
+        if (!checkBlogId) return res.status(400).send({ msg: "Blog Id is not exist in our Data Base" })
 
         // If in the existing blog isDeleted's attribute false it will updated to true
         if (checkBlogId.isDeleted == false) {

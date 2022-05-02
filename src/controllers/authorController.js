@@ -53,7 +53,7 @@ const userLogin = async function (req, res){
 
         // Finding user from author collection
         let findUser = await authorModel.findOne({status:false, email: userName, password: password})
-        if (!findUser) return res.status(404).send({msg: "User is not exist"})
+        if (!findUser) return res.status(400).send({msg: "User is not exist"})
 
         let token = await jwt.sign({userId: findUser._id.toString()}, 'India')
         res.status(201).send({status: true, msg: token})
