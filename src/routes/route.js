@@ -20,4 +20,3 @@ router.delete('/deleteBlogById/:blogId', middleWare.middlewaree, blogController.
 router.delete('/deleteBlogQuery', middleWare.middlewaree, blogController.deleteBlogQuery);
 module.exports = router;
 
-//Add middleware 
