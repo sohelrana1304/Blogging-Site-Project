@@ -56,7 +56,7 @@ const userLogin = async function (req, res){
         if (!findUser) return res.status(400).send({msg: "User is not exist"})
 
         let token = await jwt.sign({userId: findUser._id.toString()}, 'India')
-        res.status(201).send({status: true, msg: token})
+        res.status(201).send({status: true, msg:"Log in successfull", token})
 
     }
     catch (error) {

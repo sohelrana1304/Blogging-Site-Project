@@ -9,13 +9,13 @@ router.post("/createAuthor", AuthorController.createAuthor) // Author APIs /auth
 
 router.post("/createBlog", MiddleWare.authentication, MiddleWare.authorization, BlogController.createBlog ) // POST/blogs //ok
 
-router.get("/getBlog", MiddleWare.authentication, MiddleWare.authorization, BlogController.getBlog ) // GET/blogs //:id may change //ok
+router.get("/getBlog", MiddleWare.authentication, BlogController.getBlog ) // GET/blogs //:id may change //ok
 
 router.put("/updateBlog/:id", MiddleWare.authentication, MiddleWare.authorization2, BlogController.updateBlog ) // PUT/blogs/:blogId //ok
 
 router.delete("/blogDelete/:id", MiddleWare.authentication, MiddleWare.authorization2, BlogController.blogDelete ) //DELETE/blogs/:blogId //ok
 
-router.delete("/deleteBlog", MiddleWare.authentication, MiddleWare.authorization3, BlogController.deleteBlog ) //DELETE/blogs?queryParams //ok
+router.delete("/deleteBlogByQp", MiddleWare.authentication, BlogController.deleteBlogByQp ) //DELETE/blogs?queryParams //ok
 
 
 router.post("/userLogin", AuthorController.userLogin ) // POST /login // ok
