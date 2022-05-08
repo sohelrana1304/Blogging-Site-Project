@@ -4,23 +4,26 @@ const AuthorController = require("../controllers/authorController");
 const BlogController = require('../controllers/blogController');
 const MiddleWare = require('../middlewares/middleWare');
 
+// To create author
+router.post("/authors", AuthorController.createAuthor)
 
-router.post("/createAuthor", AuthorController.createAuthor) // Author APIs /authors //ok
+// To Create post
+router.post("/blogs", MiddleWare.authentication, MiddleWare.authorization, BlogController.createBlog )
 
-router.post("/createBlog", MiddleWare.authentication, MiddleWare.authorization, BlogController.createBlog ) // POST/blogs //ok
+// To fetch blog details
+router.get("/blogs", MiddleWare.authentication, BlogController.getBlog )
 
-router.get("/getBlog", MiddleWare.authentication, BlogController.getBlog ) // GET/blogs //:id may change //ok
+// To update blog
+router.put("/blogs/:blogId", MiddleWare.authentication, MiddleWare.authorization2, BlogController.updateBlog )
 
-router.put("/updateBlog/:id", MiddleWare.authentication, MiddleWare.authorization2, BlogController.updateBlog ) // PUT/blogs/:blogId //ok
+// To delete a blog document from prams
+router.delete("/blogs/:blogId", MiddleWare.authentication, MiddleWare.authorization2, BlogController.blogDelete )
 
-router.delete("/blogDelete/:id", MiddleWare.authentication, MiddleWare.authorization2, BlogController.blogDelete ) //DELETE/blogs/:blogId //ok
+// To delete blog by query
+router.delete("/blogs", MiddleWare.authentication, BlogController.deleteBlogByQp )
 
-router.delete("/deleteBlogByQp", MiddleWare.authentication, BlogController.deleteBlogByQp ) //DELETE/blogs?queryParams //ok
-
-
-router.post("/userLogin", AuthorController.userLogin ) // POST /login // ok
-
-
+// For author login
+router.post("/login", AuthorController.userLogin )
 
 
 module.exports = router;

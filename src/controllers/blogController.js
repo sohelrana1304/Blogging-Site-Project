@@ -1,20 +1,35 @@
 const blogModel = require("../models/blogModel")
 const authorModel = require("../models/authorModel")
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 
 // Phase - 1 ------------------------------------------------->
 
+// Validation
+const isValid = function(value){
+    if (typeof (value)==='undefined'|| typeof(value)=== null){
+        return false
+    }
+    if (typeof(value)=== "string" && (value).trim().length == 0){
+        return false
+    } return true
+
+}
 // POST/blogs  
 const createBlog = async function (req, res) {
     try {
         let data = req.body
+        if (Object.keys(data) == 0) {
+            return res.status(400).send({ status: false, msg: "Bad Request,No Data Provided" })
+        };
+
+        const {title, body, category} = data
 
         // Checking title present or not
-        if (!data.title) return res.status(400).send({ msg: "Title is required" })
+        if (!isValid(title)) return res.status(400).send({ msg: "Title is required" })
 
-        if (!data.body) return res.status(400).send({ msg: "Blog body is required" })
+        if (!isValid(body)) return res.status(400).send({ msg: "Blog body is required" })
 
-        if (!data.category) return res.status(400).send({ msg: "Blog category is required" })
+        if (!isValid(category)) return res.status(400).send({ msg: "Blog category is required" })
 
         let authorId = req.body.authorId
         // Validating author id from authorModel
@@ -49,8 +64,8 @@ const getBlog = async function (req, res) {
         let options = [{ authorId: req.query.authorId }, { tags: req.query.tags }, { category: req.query.category }, { subcategory: req.query.subcategory }]
 
         if (!Object.keys(req.query).length) {
-            let filter = await blogModel.find({ isDeleted: false, isPublished: true }).populate('authorId')
-            return res.status(200).send({ status: false, filter })
+            let filter = await blogModel.find({ isDeleted: false, isPublished: true, authorId: req.tokenUserId }).populate('authorId')
+            return res.status(200).send({ status: true, filter })
         }
 
         let filter = await blogModel.find({ $or: options, isDeleted: false, isPublished: true }).populate('authorId')
@@ -68,14 +83,19 @@ const getBlog = async function (req, res) {
 
 const updateBlog = async function (req, res) {
     try {
-        let blogId = req.params.id
+        let blogId = req.params.blogId
         let title = req.body.title
         let body = req.body.body
         let tags = req.body.tags
         let subcategory = req.body.subcategory
         let isPublished = req.body.isPublished
 
-        if (!blogId) return res.status(400).send({ msg: "Blog Id is required" })
+        let data = req.body
+        if (Object.keys(data) == 0) {
+            return res.status(400).send({ status: false, msg: "Bad Request,No Data Provided" })
+        };
+
+        // if (!blogId) return res.status(400).send({ msg: "Blog Id is required" })
 
         // Finding blogId from blogModel
         let checkBlogId = await blogModel.findById({ _id: blogId })
@@ -106,7 +126,7 @@ const updateBlog = async function (req, res) {
 
 const blogDelete = async function (req, res) {
     try {
-        let blogId = req.params.id
+        let blogId = req.params.blogId
 
         // Cheking the blogId fromm blogModel exist or not 
         let checkBlogId = await blogModel.findById({ _id: blogId })
@@ -148,6 +168,7 @@ const deleteBlogByQp = async function (req, res) {
         delete req.query.authorId
         let id = req.tokenUserId
         let findBlogs = (await blogModel.find({ $and: [req.query, { authorId: id }, { isDeleted: false }, { isPublished: false }] }))
+
         if (!findBlogs.length)
             return res.status(404).send({ status: false, msg: "No documents found." })
 

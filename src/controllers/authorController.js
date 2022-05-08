@@ -3,21 +3,38 @@ const jwt = require("jsonwebtoken");
 
 // Phase - 1 ------------------------------------------------->
 
+// Validation
+const isValid = function(value){
+    if (typeof (value)==='undefined'|| typeof(value)=== null){
+        return false
+    }
+    if (typeof(value)=== "string" && (value).trim().length == 0){
+        return false
+    } return true
+
+}
+
 // Author APIs /authors
 
 const createAuthor = async function (req, res) {
     try {
         let data = req.body
+        // Checking input from req.body
+        if (Object.keys(data) == 0) {
+            return res.status(400).send({ status: false, msg: "Bad Request,No Data Provided" })
+        };
 
-        if (!data.fname) return res.status(400).send({msg: "First Name is Required"})
+        const {fname, lname, title, email, password} = data
 
-        if (!data.lname) return res.status(400).send({msg: "Last Name is Required"})
+        if (!isValid(fname)) return res.status(400).send({msg: "First Name is Required"})
 
-        if (!data.title) return res.status(400).send({msg: "Title is Required"})
+        if (!isValid(lname)) return res.status(400).send({msg: "Last Name is Required"})
 
-        if (!data.email) return res.status(400).send({msg: "Email Id is Required"})
+        if (!isValid(title)) return res.status(400).send({msg: "Title is Required"})
 
-        if (!data.password) return res.status(400).send({msg: "Password is Required"})
+        if (!isValid(email)) return res.status(400).send({msg: "Email Id is Required"})
+
+        if (!isValid(password)) return res.status(400).send({msg: "Password is Required"})
 
         // This is the mail format for checking if the inputted email id perfectely formatted or not
         let mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -48,15 +65,26 @@ const createAuthor = async function (req, res) {
 
 const userLogin = async function (req, res){
     try{
+        let data = req.body
+        // Checking input from req.body
+        if (Object.keys(data) == 0) {
+            return res.status(400).send({ status: false, msg: "Bad Request,No Data Provided" })
+        };
+
         let userName = req.body.email
         let password = req.body.password
+
+        // Checking input from req.body for username
+        if(!isValid(userName)) return res.status(400).send({status: false, msg:"Input user name"})
+        // Checking input from req.body for password
+        if(!isValid(password)) return res.status(400).send({status: false, msg:"Input password"})
 
         // Finding user from author collection
         let findUser = await authorModel.findOne({status:false, email: userName, password: password})
         if (!findUser) return res.status(400).send({msg: "User is not exist"})
 
         let token = await jwt.sign({userId: findUser._id.toString()}, 'India')
-        res.status(201).send({status: true, msg:"Log in successfull", token})
+        res.status(201).send({status: true, msg:"Login successfull", token})
 
     }
     catch (error) {
